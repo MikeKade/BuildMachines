@@ -1,11 +1,20 @@
-How to install Kubernetes Master on a Ubuntu 18.04 machine
+# How to install Kubernetes Master on a Ubuntu 18.04 machine
 
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add 
 add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 apt update
 apt-get install -y kubelet kubeadm kubectl kubernetes-cni
-kubeadm init
+kubeadm init --pod-network-cidr=10.244.10.0/16 --apiserver-advertise-address=10.220.246.26
 
 mkdir -p $HOME/.kube
 cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 chown $(id -u):$(id -g) $HOME/.kube/config
+
+# Deploy the flannel network
+
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+# Wait a minute and then check if it is running
+
+kubectl get nodes
+kubectrl get pods --all-namespaces

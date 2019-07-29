@@ -5,3 +5,8 @@ In order to remove the problem:
 1. cd /etc/apt/sources.list.d
 2. rm qumulo.list
 3. apt-get update
+4. apt-get install -y emacs
+5. swapoff -a -v
+6. emacs /etc/fstab
+
+   Comment out swap line
