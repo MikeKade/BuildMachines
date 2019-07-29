@@ -1,0 +1,8 @@
+Configuring a Kubernetes Slave Node
+
+Run the following command... Of course, change the token and hash based upon what you got
+back from the master when initializing it.
+
+kubeadm join 10.220.246.26:6443 --token 6p8n06.gn8iec74yritosz5 \
+    --discovery-token-ca-cert-hash sha256:639596e995c8984d3eb39b036aaab3e1b1a479a61038793c0bb84733c3d19166
+

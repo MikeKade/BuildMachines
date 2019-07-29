@@ -1,0 +1,7 @@
+After re-imaging to Ubuntu 18.04, there is a problem with one of the apt configuration files.
+
+In order to remove the problem:
+
+1. cd /etc/apt/sources.list.d
+2. rm qumulo.list
+3. apt-get update
