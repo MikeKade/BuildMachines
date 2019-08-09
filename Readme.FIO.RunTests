@@ -3,9 +3,20 @@
 # FIO has the capability of running in "cluster mode". This means that FIO can direct a given
 # number of "slave machines" to run a given FIO test harness.
 
-# On EVERY slave machine, run the following command
+# On EVERY slave machine, run the following commands:
 
 fio --server --daemonize=`mktemp -u /tmp/fio.XXXX`
+mkdir -p /mnt/kade
+mount CLUSTER:/ /mnt/kade
+
+# I would mount the cluster by specifying the nodes to mount with IP addresses. This will guarantee
+# a true distribution.
+
+# The FIO test parameters files (see below) will write into a given directory. In the example
+# parameters file (below), I use "/mnt/kade/80-20-ran-OtherThreads". In order for the test(s)
+# to work, then you need to create the directory "80-20-ran-OtherThreads" on the cluster.
+
+mkdir -p /mnt/kade/80-20-ran-OtherThreads
 
 # Create two files. One for the single client test case and the other for the maximum number
 # of clients (slave machines) that you wish to support. This file should ONLY be on the master
@@ -77,6 +88,13 @@ size=1m
 nrfiles=1
 rw=randrw
 
+# NOTICE
+
+# This above FIO configuration file has a "directory" directive with the path of
+# "/mnt/kade/80-20-ran-OtherThreads"
+
+# In order for the testing to work, you will need to create "/mnt/kade" on each testing
+# machine. In addition, you will need to create a directory on the
 # Analyzing the results
 
 # I have created a python script that will parse the FIO ".json" output file and pull out
@@ -85,4 +103,28 @@ rw=randrw
 # Example
 
 fio_parse_json.py 4k-4k-1.json > output.csv
+
+# parse.sh
+
+# If you have many results, you should probably create a parse.sh script to parse all of the results
+# into a single ".csv" file. You can then import that .csv file into your Excel spreadsheet
+
+# Example
+
+#!/bin/bash
+./fio_parse_json.py 4k-4k-1.json > output.csv
+./fio_parse_json.py --totals 4k-4k-4.json >> output.csv
+./fio_parse_json.py --totals 4k-4k-16.json >> output.csv
+./fio_parse_json.py --totals 4k-4k-64.json >> output.csv
+./fio_parse_json.py --totals 4k-4k-250.json >> output.csv
+./fio_parse_json.py 4k-1m-1.json >> output.csv
+./fio_parse_json.py --totals 4k-1m-4.json >> output.csv
+./fio_parse_json.py --totals 4k-1m-16.json >> output.csv
+./fio_parse_json.py --totals 4k-1m-64.json >> output.csv
+./fio_parse_json.py --totals 4k-1m-250.json >> output.csv
+./fio_parse_json.py 4k-100m-1.json >> output.csv
+./fio_parse_json.py --totals 4k-100m-4.json >> output.csv
+./fio_parse_json.py --totals 4k-100m-16.json >> output.csv
+./fio_parse_json.py --totals 4k-100m-64.json >> output.csv
+./fio_parse_json.py --totals 4k-100m-250.json >> output.csv
 
