@@ -2,6 +2,7 @@ Configuring a Kubernetes Slave Node
 
 # Install Docker first
 
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 add-apt-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 apt update
 apt-get install -y kubelet kubeadm kubectl kubernetes-cni

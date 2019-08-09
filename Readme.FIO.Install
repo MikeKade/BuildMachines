@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# This file contains all of the instructions for loading FIO and running
+# testing on a Qumulo client in our lab
+
+# We must start by deleting the qumulo repository from the apt sources list. 
+# Unfortunately, it is wrong and prevents us from running "apt update"
+
+rm /etc/apt/sources.list.d/qumulo.list
+apt update
+
+# We need to load packages in order to build the latest version of FIO
+
+apt-get install -y libaio1 libaio-dev
+
+# Load the numa library for FIO testing. You may not need this, but FIO has numerous tests
+# and capturing performance statistics accurately with NUMA architectures requires this
+# library
+
+apt-get install -y libnuma-dev
+
+# Get the zlib for FIO
+
+apt-get install -y zlib1g zlib1g-dev
+
+# Get the git command so that we can download FIO 
+
+apt-get install -y git
+
+# Get the FIO sources
+
+cd ~
+git clone https://github.com/axboe/fio.git
+
+# Build FIO
+
+cd fio
+./configure --prefix=/usr/local && make install
+
