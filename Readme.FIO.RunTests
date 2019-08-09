@@ -1,0 +1,88 @@
+# This file describes how to run any individual FIO across multiple machines
+
+# FIO has the capability of running in "cluster mode". This means that FIO can direct a given
+# number of "slave machines" to run a given FIO test harness.
+
+# On EVERY slave machine, run the following command
+
+fio --server --daemonize=`mktemp -u /tmp/fio.XXXX`
+
+# Create two files. One for the single client test case and the other for the maximum number
+# of clients (slave machines) that you wish to support. This file should ONLY be on the master
+# machine running all of the FIO testing
+
+# In those files, place the full machine name for the slave machines
+#
+# In my case, I name the files "create-1.txt" and "create-other.txt"
+#
+# Example for client-1.txt
+
+echo "duc48-100g.eng.qumulo.com" > client-1.txt
+
+# Example for client-other.txt
+
+echo "duc48-100g.eng.qumulo.com" > client-other.txt
+echo "duc49-100g.eng.qumulo.com" >> client-other.txt
+echo "duc50-100g.eng.qumulo.com" >> client-other.txt
+echo "duc51-100g.eng.qumulo.com" >> client-other.txt
+
+# You should create a "run.sh" file that contains all of the tests that you wish to run
+# You can, of course, manually run them, but this becomes tedious for multiple tests
+
+# Example
+
+fio --client=client-1.txt --output=./4k-100m-1.json --output-format=json 4k-100m-1.fio > run.sh
+fio --client=client-other.txt --output=./4k-100m-4.json --output-format=json 4k-100m-4.fio >> run.sh
+fio --client=client-other.txt --output=./4k-100m-16.json --output-format=json 4k-100m-16.fio >> run.sh
+fio --client=client-other.txt --output=./4k-100m-64.json --output-format=json 4k-100m-64.fio >> run.sh
+fio --client=client-other.txt --output=./4k-100m-250.json --output-format=json 4k-100m-250.fio >> run.sh
+fio --client=client-1.txt --output=./4k-1m-1.json --output-format=json 4k-1m-1.fio >> run.sh
+fio --client=client-other.txt --output=./4k-1m-4.json --output-format=json 4k-1m-4.fio >> run.sh
+fio --client=client-other.txt --output=./4k-1m-16.json --output-format=json 4k-1m-16.fio >> run.sh
+fio --client=client-other.txt --output=./4k-1m-64.json --output-format=json 4k-1m-64.fio >> run.sh
+fio --client=client-other.txt --output=./4k-1m-250.json --output-format=json 4k-1m-250.fio >> run.sh
+fio --client=client-1.txt --output=./4k-4k-1.json --output-format=json 4k-4k-1.fio >> run.sh
+fio --client=client-other.txt --output=./4k-4k-4.json --output-format=json 4k-4k-4.fio >> run.sh
+fio --client=client-other.txt --output=./4k-4k-16.json --output-format=json 4k-4k-16.fio >> run.sh
+fio --client=client-other.txt --output=./4k-4k-64.json --output-format=json 4k-4k-64.fio >> run.sh
+fio --client=client-other.txt --output=./4k-4k-250.json --output-format=json 4k-4k-250.fio >> run.sh
+
+# Create a FIO test parameter file
+#
+# The test parameter file contains all of the directives for each individual test
+# The following example must be placed into a file with a suffix of ".fio". This file
+# is passed from the master to the slaves and executed there. The slaves then send the output
+# back to the master and the master will output the results into a ".json" file
+
+# Example
+
+[global]
+numjobs=250
+loops=1
+ioengine=libaio
+group_reporting
+fallocate=none
+fsync_on_close=1
+unlink=1
+direct=1
+bs=4k
+rwmixread=80
+time_based=1
+runtime=300
+description=80/20 ran - 250 Thread(s) / 4k block size
+
+[ran]
+directory=/mnt/kade/80-20-ran-OtherThreads
+size=1m
+nrfiles=1
+rw=randrw
+
+# Analyzing the results
+
+# I have created a python script that will parse the FIO ".json" output file and pull out
+# the results into a comma-delimited format. 
+
+# Example
+
+fio_parse_json.py 4k-4k-1.json > output.csv
+
