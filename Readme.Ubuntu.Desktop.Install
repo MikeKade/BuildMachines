@@ -1,0 +1,26 @@
+# Instructions for installing Ubuntu 18.04 desktop environment
+#
+# We will use the lightweight xfce desktop versus the standard gnome desktop
+
+apt install xfce4 xfce4-goodies
+apt install tightvncserver
+
+# Start vncserver in order to set a password
+
+vncserver
+
+# It will ask for a password... Set it here...
+# Then kill the vncserver in order to add the desktop manager
+
+vncserver -kill :1
+
+mv ~/.vnc/xstartup ~/.vnc/xstartup.bak
+emacs ~/.vnc/xstartup
+#!/bin/bash
+xrdb $HOME/.Xresources
+startxfce4 &
+
+# Now connect to the remote system from the Mac
+
+Go -> Connect to Server
+vnc://dq2-a-40g.eng.qumulo.com:5901
