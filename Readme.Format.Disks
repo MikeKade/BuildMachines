@@ -1,0 +1,26 @@
+# Instructions on how to format new disk drives on Ubuntu 18.04
+
+# Find new drives
+
+fdisk -l
+
+# Partition it to a single partition
+
+fdisk /dev/sdb
+m
+p
+n
+p
+1
+<cr>
+<cr>
+w
+
+# Format it with ext4
+
+mkfs.ext4 /dev/sdb
+
+# Mount it 
+
+mkdir /mnt/sdb
+mount /dev/sdb /mnt/sdb
