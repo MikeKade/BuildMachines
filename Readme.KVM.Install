@@ -1,0 +1,53 @@
+# To get KVM running on lab machines with Ubuntu 18.04
+
+apt-get install qemu-kvm libvirt-bin bridge-utils virt-manager
+service libvirtd start
+update-rc.d libvirtd enable
+service libvirtd status
+
+# Update the netplan to include a bridge component
+
+emacs /etc/netplan/01-netcfg.yaml
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp4s0:
+      dhcp4: no
+      dhcp6: no
+
+  bridges:
+    br0:
+      interfaces: [enp4s0]
+      dhcp4: no
+      dhcp6: no
+      addresses: [10.220.246.26/16]
+      gateway4: 10.220.0.1
+      nameservers:
+        addresses: [10.100.0.5]
+      parameters:
+        stp: true
+        forward-delay: 4
+
+netplan apply
+
+# Verify that the bridge is running
+
+networkctl status -a
+
+# Create a host bridge entry for all of the virtual machines
+
+emacs host-bridge.xml
+<network>
+  <name>host-bridge</name>
+  <forward mode="bridge"/>
+  <bridge name="br0"/>
+</network>
+
+# Enable host bridge
+
+virsh net-define host-bridge.xml
+virsh net-start host-bridge
+virsh net-autostart host-bridge
+virsh net-list --all
