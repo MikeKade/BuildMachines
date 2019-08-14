@@ -1,0 +1,16 @@
+# Install Google Chrome
+
+wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+dpkg -i google-chrome-stable_current_amd64.deb
+
+# Start Google Chrome to set the default browser
+
+google-chrome
+
+# If you are running Google Chrome as root, then you need to set the following
+
+emacs /opt/google/chrome/google-chrome
+
+# Make the last line look like this...
+
+exec -a "$0" "$HERE/chrome" "$@"--user-data-dir --test-type --no-sandbox
