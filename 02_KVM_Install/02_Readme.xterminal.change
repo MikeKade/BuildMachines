@@ -1,0 +1,3 @@
+# Need to change this for Ubuntu Desktop terminal to work correctly
+
+update-alternatives --config x-terminal-emulator
