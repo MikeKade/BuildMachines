@@ -1,7 +1,7 @@
 # Install Google Chrome
 
-apt install -y fonts-liberation
-apt install -y libappindicator3-1 libdbusmenu-glib4 libdbusmenu-gtk3-4 libindicator3-7
+apt-get install -y fonts-liberation
+apt-get install -y libappindicator3-1 libdbusmenu-glib4 libdbusmenu-gtk3-4 libindicator3-7
 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 dpkg -i google-chrome-stable_current_amd64.deb
 

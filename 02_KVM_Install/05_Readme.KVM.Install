@@ -1,6 +1,6 @@
 # To get KVM running on lab machines with Ubuntu 18.04
 
-apt-get install qemu-kvm libvirt-bin bridge-utils virt-manager
+apt-get install -y qemu-kvm libvirt-bin bridge-utils virt-manager
 service libvirtd start
 update-rc.d libvirtd enable
 service libvirtd status
